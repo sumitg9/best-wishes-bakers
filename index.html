@@ -1,0 +1,1204 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+  <title>RadhaKrishna CakeHouse – Handcrafted with Love</title>
+  <link rel="icon" href="images/logo.png" />
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/gsap/3.12.5/gsap.min.js"></script>
+  <link href="https://fonts.googleapis.com/css2?family=Playfair+Display:ital,wght@0,400;0,700;0,900;1,400&family=DM+Sans:wght@300;400;500&display=swap" rel="stylesheet"/>
+  <script src="https://cdn.tailwindcss.com"></script>
+  <script>
+    tailwind.config = {
+      theme: {
+        extend: {
+          colors: {
+            cream: '#F6E0FF',
+            blush: '#FFE4E1',
+            rose:  '#eb9794',
+            cherry:'#C0392B',
+            choco: '#1F0F29',
+            gold:  '#D4A853',
+          },
+          fontFamily: {
+            display: ['"Playfair Display"', 'serif'],
+            body:    ['"DM Sans"', 'sans-serif'],
+          },
+        }
+      }
+    }
+  </script>
+  <style>
+    :root { --nav-h: 116px; --nav-h-small: 64px; }
+    * { box-sizing: border-box; }
+    body { background: #FFF5EE; font-family: 'DM Sans', sans-serif; overflow-x: hidden; }
+
+    /* ── Decorative blobs ── */
+    .blob { position: absolute; border-radius: 50%; filter: blur(60px); opacity: .35; pointer-events: none; }
+
+    /* ── Navbar ── */
+    nav a { transition: color .2s; }
+    nav a:hover { color: #eb9794; }
+
+    /* ── Hero ── */
+    .hero-slider {
+      position: relative;
+      width: 100vw;
+      left: 50%;
+      right: 50%;
+      margin-left: -50vw;
+      margin-right: -50vw;
+      height: 100vh;
+      min-height: 640px;
+      overflow: hidden;
+      background: #12050d;
+    }
+
+    .slide {
+      position: absolute;
+      inset: 0;
+      opacity: 0;
+      transition: opacity 1.2s ease;
+      overflow: hidden;
+    }
+
+    .slide.active {
+      opacity: 1;
+      z-index: 1;
+    }
+
+    .slide-bg {
+      position: absolute;
+      inset: 0%;
+      background-size: cover;
+      background-position: center;
+      transform: scale(1.08);
+      transition: transform 8s linear;
+      will-change: transform;
+    }
+
+    .slide.active .slide-bg { transform: scale(1); }
+
+    .slide-overlay {
+      position: absolute;
+      inset: 0;
+      background: linear-gradient(
+        to right,
+        rgba(18,5,13,0.82) 0%,
+        rgba(18,5,13,0.48) 50%,
+        rgba(18,5,13,0.14) 100%
+      );
+    }
+
+    .slide-content {
+      position: absolute;
+      inset: 0;
+      display: flex;
+      align-items: center;
+      z-index: 2;
+      padding: 7rem 0 4rem;
+    }
+
+    .slide-inner {
+      max-width: 680px;
+    }
+
+    .slide-tag {
+      display: inline-flex;
+      align-items: center;
+      gap: 0.5rem;
+      padding: 0.55rem 1rem;
+      background: rgba(212,168,83,0.16);
+      border: 1px solid rgba(212,168,83,0.45);
+      border-radius: 999px;
+      color: #d4a853;
+      font-size: 0.78rem;
+      font-weight: 700;
+      letter-spacing: 0.12em;
+      text-transform: uppercase;
+      opacity: 0;
+      transform: translateY(24px);
+      transition: opacity 0.6s 0.2s ease, transform 0.6s 0.2s ease;
+    }
+
+    .slide.active .slide-tag { opacity: 1; transform: none; }
+
+    .slide-title {
+      font-family: 'Playfair Display', serif;
+      font-size: clamp(2.8rem, 6vw, 5rem);
+      font-weight: 800;
+      line-height: 1.03;
+      color: #fff;
+      margin: 1rem 0 1rem;
+      opacity: 0;
+      transform: translateY(32px);
+      transition: opacity 0.7s 0.35s ease, transform 0.7s 0.35s ease;
+    }
+
+    .slide.active .slide-title { opacity: 1; transform: none; }
+    .slide-title em { font-style: italic; color: #d4a853; }
+
+    .slide-desc {
+      font-size: 1.05rem;
+      line-height: 1.75;
+      color: rgba(255,255,255,0.84);
+      max-width: 52ch;
+      opacity: 0;
+      transform: translateY(24px);
+      transition: opacity 0.6s 0.5s ease, transform 0.6s 0.5s ease;
+    }
+
+    .slide.active .slide-desc { opacity: 1; transform: none; }
+
+    .slide-actions {
+      display: flex;
+      flex-wrap: wrap;
+      gap: 1rem;
+      margin-top: 1.8rem;
+      opacity: 0;
+      transform: translateY(20px);
+      transition: opacity 0.6s 0.65s ease, transform 0.6s 0.65s ease;
+    }
+
+    .slide.active .slide-actions { opacity: 1; transform: none; }
+
+    .btn {
+      display: inline-flex;
+      align-items: center;
+      gap: 0.5rem;
+      min-height: 52px;
+      padding: 0.8rem 1.6rem;
+      border-radius: 999px;
+      font-weight: 700;
+      font-size: 0.95rem;
+      border: 2px solid transparent;
+      cursor: pointer;
+      transition: transform 0.25s ease, box-shadow 0.25s ease, background 0.3s, color 0.3s, border-color 0.3s;
+    }
+
+    .btn:hover { transform: translateY(-2px); }
+
+    .btn-rose {
+      background: linear-gradient(135deg, #eb9794, #8c3a38);
+      color: #fff;
+      box-shadow: 0 12px 32px rgba(235,151,148,0.35);
+    }
+
+    .btn-rose:hover { box-shadow: 0 18px 44px rgba(235,151,148,0.45); }
+
+    .btn-outline-white {
+      background: transparent;
+      color: #fff;
+      border-color: rgba(255,255,255,0.55);
+    }
+
+    .btn-outline-white:hover {
+      background: rgba(255,255,255,0.12);
+      border-color: #fff;
+    }
+
+    .slider-controls {
+      position: absolute;
+      bottom: 2.5rem;
+      left: 0;
+      right: 0;
+      z-index: 10;
+      display: flex;
+      align-items: center;
+      gap: 1.25rem;
+      padding: 0 2rem;
+      justify-content: space-between;
+    }
+
+    .slider-dots { display: flex; gap: 0.6rem; }
+
+    .slider-dot {
+      width: 10px;
+      height: 10px;
+      border-radius: 999px;
+      background: rgba(255,255,255,0.35);
+      border: none;
+      cursor: pointer;
+      transition: width 0.4s ease, background 0.4s ease;
+      padding: 0;
+    }
+
+    .slider-dot.active { width: 30px; background: #eb9794; }
+
+    .slider-arrows { display: flex; gap: 0.6rem; }
+
+    .slider-arrow {
+      width: 48px;
+      height: 48px;
+      border-radius: 999px;
+      background: rgba(255,255,255,0.12);
+      border: 1px solid rgba(255,255,255,0.25);
+      color: #fff;
+      font-size: 1.2rem;
+      cursor: pointer;
+      display: inline-flex;
+      align-items: center;
+      justify-content: center;
+      transition: background 0.3s, transform 0.3s;
+      backdrop-filter: blur(8px);
+    }
+
+    .slider-arrow:hover {
+      background: #eb9794;
+      border-color: #eb9794;
+      transform: scale(1.05);
+    }
+
+    .slide-progress {
+      position: absolute;
+      bottom: 0;
+      left: 0;
+      height: 3px;
+      background: #eb9794;
+      z-index: 10;
+      width: 0;
+      transition: width linear;
+    }
+
+    @media (max-width: 1024px) {
+      .slide-content { padding: 5rem 0 3rem; }
+      .slider-controls { padding: 0 1.25rem; }
+    }
+
+    @media (max-width: 768px) {
+      .slide-content { padding: 4rem 0 2rem; }
+      .slide-title { font-size: clamp(2.2rem, 7vw, 3.4rem); }
+      .slider-controls { flex-direction: column; align-items: center; gap: 1rem; }
+      .slider-arrows { display: none; }
+      #reviews { background-attachment: scroll; }
+    }
+
+    /* navbar shrink behavior */
+    nav .nav-inner { height: var(--nav-h); display:flex; align-items:center; transition: height .3s ease-out; }
+    nav.scrolled .nav-inner { height: var(--nav-h-small); }
+    .site-logo { width: auto; height: 80px; transition: width .3s ease-out, height .3s ease-out; }
+    nav.scrolled .site-logo { width: auto; height: 40px; }
+
+    /* ── Flavour card ── */
+    .flavor-card { transition: transform .35s cubic-bezier(.34,1.56,.64,1), box-shadow .35s; }
+    .flavor-card:hover { transform: translateY(-10px) scale(1.03); box-shadow: 0 20px 50px rgba(232,82,106,.22); }
+
+    /* ── Seasonal split ── */
+    .seasonal-card { background: linear-gradient(120deg, #fff 55%, #FFE4E1 100%); }
+
+    /* ── Build section ── */
+    .build-step { cursor: pointer; transition: background .25s, transform .25s; }
+    .build-step:hover { background: #eb9794; color: #fff; transform: scale(1.05); }
+    .build-step:hover .step-icon { filter: brightness(10); }
+
+    /* ── Review card ── */
+    .review-card { backdrop-filter: blur(8px); transition: transform .35s cubic-bezier(.2,.9,.3,1), box-shadow .35s; will-change: transform; }
+    .review-card:hover { transform: translateY(-6px); }
+    /* subtle depth layers for parallax (will be controlled via JS) */
+    #reviews {
+      perspective: 1200px;
+      position: relative;
+      background-image: linear-gradient(rgba(18,5,13,.82), rgba(18,5,13,.9)), url('images/1.jpg');
+      background-size: cover;
+      background-position: center;
+      background-attachment: fixed;
+      background-blend-mode: multiply;
+      color: #fff;
+    }
+    #reviews::before {
+      content: '';
+      position: absolute;
+      inset: 0;
+      background: rgba(13,6,21,0.45);
+      pointer-events: none;
+      z-index: 0;
+    }
+    #reviews .max-w-7xl { position: relative; z-index: 1; }
+    #reviews .review-carousel { transform-style: preserve-3d; }
+
+    /* ── CTA section ── */
+    .cta-bg { background: linear-gradient(135deg, #C0392B 0%, #eb9794 100%); }
+
+    /* ── Floating dot decoration ── */
+    .dot-grid { background-image: radial-gradient(circle, #eb979444 1px, transparent 1px); background-size: 24px 24px; }
+
+    /* ── Scroll reveal ── */
+    .reveal { opacity: 0; transform: translateY(30px); transition: opacity .7s ease, transform .7s ease; }
+    .reveal.visible { opacity: 1; transform: none; }
+
+    /* ── Btn ── */
+    .btn-primary {
+      background: #eb9794;
+      color: #fff;
+      padding: .75rem 2rem;
+      border-radius: 999px;
+      font-weight: 600;
+      letter-spacing: .03em;
+      transition: background .25s, transform .2s, box-shadow .25s;
+      display: inline-block;
+      cursor: pointer;
+    }
+    .btn-primary:hover { background: #c96c69; transform: translateY(-2px); box-shadow: 0 8px 24px rgba(201,108,105,.35); }
+
+    .btn-outline {
+      border: 2px solid #eb9794;
+      color: #eb9794;
+      padding: .65rem 1.8rem;
+      border-radius: 999px;
+      font-weight: 600;
+      transition: all .25s;
+      display: inline-block;
+      cursor: pointer;
+    }
+    .btn-outline:hover { background: #eb9794; color: #fff; }
+
+    /* ── Map section ── */
+    .map-card { background: white; border-radius: 1.5rem; overflow: hidden; box-shadow: 0 30px 80px rgba(0,0,0,.08); }
+    .map-fullwidth { width: 100vw; max-width: 100vw; position: relative; left: 50%; right: 50%; margin-left: -50vw; margin-right: -50vw; }
+    .map-frame { width: 100%; min-height: 450px; border: 0; }
+
+    /* ── Gallery masonry layout + hover & modal ── */
+    #gallery .gallery-grid {
+      column-gap: 1.25rem;
+      column-fill: auto;
+      column-count: 1;
+    }
+    #gallery .gallery-item {
+      display: inline-block;
+      width: 100%;
+      margin: 0 0 1.25rem;
+      break-inside: avoid;
+      -webkit-column-break-inside: avoid;
+      overflow: hidden;
+      border-radius: 1rem;
+      cursor: zoom-in;
+      position: relative;
+      background: #fff;
+    }
+    #gallery .gallery-item img {
+      width: 100%;
+      height: auto;
+      object-fit: cover;
+      display: block;
+      transition: transform .6s ease, filter .25s ease;
+    }
+    #gallery .gallery-item:hover img { transform: scale(1.06); filter: brightness(.94) saturate(1.05); }
+    #gallery .gallery-item::after {
+      content: "";
+      position: absolute; inset: 0 0 0 0;
+      background: linear-gradient(180deg, rgba(0,0,0,0) 40%, rgba(0,0,0,0.24) 100%);
+      opacity: 0; transition: opacity .25s ease;
+      pointer-events: none;
+    }
+    #gallery .gallery-item:hover::after { opacity: 1; }
+    /* magnifier icon via pseudo-element */
+    #gallery .gallery-item::before {
+      content: "🔍";
+      position: absolute; right: 12px; bottom: 12px;
+      width: 44px; height: 44px; display: grid; place-items: center;
+      background: rgba(255,255,255,0.06); color: #fff; border-radius: 999px;
+      border: 1px solid rgba(255,255,255,0.08); opacity: 0; transform: translateY(6px);
+      transition: opacity .22s ease, transform .22s ease;
+      font-size: 18px; pointer-events: none;
+    }
+    #gallery .gallery-item:hover::before { opacity: 1; transform: none; }
+
+    @media (max-width: 767px) {
+      #gallery .gallery-grid { column-count: 1; }
+    }
+    @media (min-width: 768px) and (max-width: 1023px) {
+      #gallery .gallery-grid { column-count: 2; }
+    }
+    @media (min-width: 1024px) {
+      #gallery .gallery-grid { column-count: 3; }
+    }
+    @media (min-width: 1280px) {
+      #gallery .gallery-grid { column-count: 4; }
+    }
+
+    /* modal / lightbox */
+    #image-modal { position: fixed; inset: 0; display: flex; align-items: center; justify-content: center; background: rgba(0,0,0,0.85); z-index: 60; padding: 2rem; }
+    #image-modal.hidden { display: none; }
+    #image-modal img { max-width: 92%; max-height: 92%; border-radius: 0.75rem; box-shadow: 0 30px 90px rgba(0,0,0,0.7); }
+    #modal-close { position: absolute; top: 1.25rem; right: 1.25rem; width: 44px; height: 44px; border-radius: 999px; display: flex; align-items: center; justify-content: center; background: rgba(255,255,255,0.06); border: 1px solid rgba(255,255,255,0.12); color: #fff; cursor: pointer; }
+
+    /* ── Star ── */
+    .star { color: #D4A853; }
+
+    /* ── Smooth scroll ── */
+    html { scroll-behavior: smooth; }
+
+    /* ── Mobile hamburger ── */
+    #menu { display: none; }
+    #menu.open { display: flex; }
+  </style>
+</head>
+<body>
+
+<!-- ════════════════════════════════════════════
+     NAVBAR
+════════════════════════════════════════════ -->
+<nav class="fixed top-0 w-full z-50 bg-cream/90 backdrop-blur-md border-b border-rose/10 shadow-sm">
+  <div class="max-w-7xl mx-auto px-6 nav-inner justify-between">
+    <!-- Logo -->
+    <a href="#" class="flex items-center gap-3">
+      <img src="images/logo.png" alt="logo" class="site-logo object-cover shadow-sm" />
+    </a>
+    <!-- Desktop links -->
+    <div class="hidden md:flex items-center gap-8 text-sm font-medium text-choco/80">
+      <a href="#flavors">Flavors</a>
+      <a href="#seasonal">Seasonal</a>
+      <a href="#build">Custom</a>
+      <a href="#reviews">Reviews</a>
+    </div>
+    <!-- Actions -->
+    <div class="hidden md:flex items-center gap-3">
+      <a href="#build" class="btn-primary text-sm">Order Now</a>
+    </div>
+    <!-- Hamburger -->
+    <button id="hamburger" class="md:hidden text-choco" onclick="document.getElementById('menu').classList.toggle('open')">
+      <svg xmlns="http://www.w3.org/2000/svg" class="h-6 w-6" fill="none" viewBox="0 0 24 24" stroke="currentColor"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M4 6h16M4 12h16M4 18h16"/></svg>
+    </button>
+  </div>
+  <!-- Mobile menu -->
+  <div id="menu" class="flex-col bg-cream border-t border-rose/10 px-6 py-4 gap-4 text-choco/80 text-sm font-medium">
+    <a href="#flavors">Flavors</a>
+    <a href="#seasonal">Seasonal</a>
+    <a href="#build">Custom</a>
+    <a href="#reviews">Reviews</a>
+    <a href="#build" class="btn-primary text-center mt-2">Order Now</a>
+  </div>
+</nav>
+
+
+<!-- ════════════════════════════════════════════
+     HERO SLIDER
+════════════════════════════════════════════ -->
+<section class="hero-slider" id="top" aria-label="Hero banner">
+  <div class="slide active" data-index="0">
+    <div class="slide-bg" style="background-image:url('images/1.jpg')"></div>
+    <div class="slide-overlay"></div>
+    <div class="slide-content">
+      <div class="max-w-7xl mx-auto px-6">
+        <div class="slide-inner">
+          <span class="slide-tag">✦ Artisan Celebration Cakes</span>
+          <h1 class="slide-title">Custom <em>Designer Cakes</em><br>for Every Sweet Moment.</h1>
+          <p class="slide-desc">Premium flavours, flawless finishes, and delivery across Siliguri — made fresh for birthdays, weddings, and special events.</p>
+          <div class="slide-actions">
+            <a class="btn btn-rose" href="#flavors">Explore Flavors</a>
+            <a class="btn btn-outline-white" href="#build">Build Your Cake</a>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <div class="slide" data-index="1">
+    <div class="slide-bg" style="background-image:url('images/2.jpg')"></div>
+    <div class="slide-overlay"></div>
+    <div class="slide-content">
+      <div class="max-w-7xl mx-auto px-6">
+        <div class="slide-inner">
+          <span class="slide-tag">✦ Fresh Batch Every Day</span>
+          <h1 class="slide-title">Chocolate <em>Ganache</em><br>with Berry Elegance.</h1>
+          <p class="slide-desc">Silky ganache, fresh berries, and handcrafted styling for celebrations that deserve the sweetest finishing touch.</p>
+          <div class="slide-actions">
+            <a class="btn btn-rose" href="#flavors">View Chocolate Cakes</a>
+            <a class="btn btn-outline-white" href="#about">Our Story</a>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <div class="slide" data-index="2">
+    <div class="slide-bg" style="background-image:url('images/3.jpg')"></div>
+    <div class="slide-overlay"></div>
+    <div class="slide-content">
+      <div class="max-w-7xl mx-auto px-6">
+        <div class="slide-inner">
+          <span class="slide-tag">✦ Seasonal Favorites</span>
+          <h1 class="slide-title">Fresh <em>Berry</em><br>Creations for Every Party.</h1>
+          <p class="slide-desc">Light, fruity, and beautifully plated — our berry cakes are a crowd favorite for every occasion.</p>
+          <div class="slide-actions">
+            <a class="btn btn-rose" href="#flavors">See Berry Cakes</a>
+            <a class="btn btn-outline-white" href="#contact">Order Now</a>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <div class="slider-controls">
+    <div class="slider-dots" role="tablist" aria-label="Slide navigation">
+      <button class="slider-dot active" data-slide="0" role="tab" aria-selected="true" aria-label="Slide 1"></button>
+      <button class="slider-dot" data-slide="1" role="tab" aria-selected="false" aria-label="Slide 2"></button>
+      <button class="slider-dot" data-slide="2" role="tab" aria-selected="false" aria-label="Slide 3"></button>
+    </div>
+    <div class="slider-arrows">
+      <button class="slider-arrow" id="slider-prev" aria-label="Previous slide">&#8592;</button>
+      <button class="slider-arrow" id="slider-next" aria-label="Next slide">&#8594;</button>
+    </div>
+  </div>
+  <div class="slide-progress" id="slide-progress"></div>
+  <div class="absolute bottom-8 left-1/2 -translate-x-1/2 animate-bounce text-rose/60 text-2xl">↓</div>
+</section>
+
+
+<!-- ════════════════════════════════════════════
+     FEATURED FLAVORS
+════════════════════════════════════════════ -->
+
+<section id="flavors" class="py-24 relative overflow-hidden">
+  <div class="blob w-64 h-64 bg-blush top-0 right-0 opacity-50"></div>
+  <div class="max-w-7xl mx-auto px-6">
+    <!-- Heading -->
+    <div class="text-center mb-16 reveal">
+      <p class="text-rose text-sm font-semibold uppercase tracking-widest mb-2">Our Specialties</p>
+      <h2 class="font-display text-4xl md:text-5xl font-black text-choco">Featured Flavors</h2>
+      <div class="w-12 h-1 bg-rose mx-auto mt-4 rounded-full"></div>
+    </div>
+
+    <!-- Cards -->
+    <div class="grid grid-cols-2 sm:grid-cols-3 lg:grid-cols-5 gap-6">
+      <!-- Each flavor -->
+      <div class="flavor-card reveal bg-white rounded-3xl shadow-md p-5 text-center flex flex-col items-center gap-3">
+        <img src="images/4.webp" alt="Vanilla Bean cake" class="w-full h-40 rounded-3xl object-cover shadow-sm" />
+        <h3 class="font-display font-bold text-choco text-base">Vanilla Bean</h3>
+        <p class="text-choco/50 text-xs">Classic & creamy</p>
+        <span class="text-rose font-semibold text-sm">₹850</span>
+      </div>
+      <div class="flavor-card reveal bg-white rounded-3xl shadow-md p-5 text-center flex flex-col items-center gap-3" style="transition-delay:.1s">
+        <img src="images/5.webp" alt="Strawberry cake" class="w-full h-40 rounded-3xl object-cover shadow-sm" />
+        <h3 class="font-display font-bold text-choco text-base">Strawberry</h3>
+        <p class="text-choco/50 text-xs">Fresh & fruity</p>
+        <span class="text-rose font-semibold text-sm">₹950</span>
+      </div>
+      <div class="flavor-card reveal bg-white rounded-3xl shadow-md p-5 text-center flex flex-col items-center gap-3" style="transition-delay:.2s">
+        <img src="images/6.webp" alt="Salted Caramel cake" class="w-full h-40 rounded-3xl object-cover shadow-sm" />
+        <h3 class="font-display font-bold text-choco text-base">Salted Caramel</h3>
+        <p class="text-choco/50 text-xs">Sweet & salty</p>
+        <span class="text-rose font-semibold text-sm">₹1,050</span>
+      </div>
+      <div class="flavor-card reveal bg-white rounded-3xl shadow-md p-5 text-center flex flex-col items-center gap-3" style="transition-delay:.3s">
+        <img src="images/8.jpg" alt="Blueberry Bliss cake" class="w-full h-40 rounded-3xl object-cover shadow-sm" />
+        <h3 class="font-display font-bold text-choco text-base">Blueberry Bliss</h3>
+        <p class="text-choco/50 text-xs">Tart & vibrant</p>
+        <span class="text-rose font-semibold text-sm">₹990</span>
+      </div>
+      <div class="flavor-card reveal bg-white rounded-3xl shadow-md p-5 text-center flex flex-col items-center gap-3" style="transition-delay:.4s">
+        <img src="images/1.jpg" alt="Lemon Zest cake" class="w-full h-40 rounded-3xl object-cover shadow-sm" />
+        <h3 class="font-display font-bold text-choco text-base">Lemon Zest</h3>
+        <p class="text-choco/50 text-xs">Tangy & bright</p>
+        <span class="text-rose font-semibold text-sm">₹880</span>
+      </div>
+    </div>
+
+    <!-- CTA -->
+    <div class="text-center mt-12 reveal">
+      <a href="#build" class="btn-outline">See Full Menu →</a>
+    </div>
+  </div>
+</section>
+
+
+<!-- ════════════════════════════════════════════
+     SEASONAL SPECIALS
+════════════════════════════════════════════ -->
+<section id="seasonal" class="py-24 bg-gradient-to-br from-blush/50 to-cream overflow-hidden">
+  <div class="max-w-7xl mx-auto px-6">
+    <div class="text-center mb-16 reveal">
+      <p class="text-rose text-sm font-semibold uppercase tracking-widest mb-2">Limited Time</p>
+      <h2 class="font-display text-4xl md:text-5xl font-black text-choco">Seasonal Specials</h2>
+      <div class="w-12 h-1 bg-rose mx-auto mt-4 rounded-full"></div>
+    </div>
+
+    <div class="grid md:grid-cols-2 gap-8">
+      <!-- Card 1 -->
+      <div class="seasonal-card reveal rounded-3xl overflow-hidden shadow-lg flex flex-col md:flex-row items-center gap-6 p-8">
+        <img src="images/1.jpg" alt="Spring Lemon Lavender" class="w-full md:w-1/2 h-64 md:h-auto rounded-3xl object-cover shadow-sm" />
+        <div>
+          <span class="bg-rose/15 text-rose text-xs font-semibold px-3 py-1 rounded-full">Summer Special</span>
+          <h3 class="font-display text-2xl font-bold text-choco mt-3 mb-2">Spring Lemon Lavender</h3>
+          <p class="text-choco/60 text-sm mb-4">A delicate cheesecake infused with fragrant lavender and crowned with fresh lemon curd. Floral, refreshing, unforgettable.</p>
+          <div class="flex items-center gap-3">
+            <span class="text-rose font-bold text-lg">₹1,200</span>
+            <a href="#build" class="btn-primary text-sm">Order Now →</a>
+          </div>
+        </div>
+      </div>
+      <!-- Card 2 -->
+      <div class="seasonal-card reveal rounded-3xl overflow-hidden shadow-lg flex flex-col md:flex-row items-center gap-6 p-8" style="transition-delay:.15s">
+        <img src="images/2.jpg" alt="Raspberry Rose Velvet" class="w-full md:w-1/2 h-64 md:h-auto rounded-3xl object-cover shadow-sm" />
+        <div>
+          <span class="bg-gold/20 text-gold text-xs font-semibold px-3 py-1 rounded-full">Monsoon Pick</span>
+          <h3 class="font-display text-2xl font-bold text-choco mt-3 mb-2">Raspberry Rose Velvet</h3>
+          <p class="text-choco/60 text-sm mb-4">Red velvet layers kissed with rose water and layered with a tangy raspberry cream cheese frosting. Pure romance in every slice.</p>
+          <div class="flex items-center gap-3">
+            <span class="text-rose font-bold text-lg">₹1,350</span>
+            <a href="#build" class="btn-primary text-sm">Order Now →</a>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+</section>
+
+
+<!-- ════════════════════════════════════════════
+     CATALOGUE GALLERY
+════════════════════════════════════════════ -->
+<section id="gallery" class="py-24 bg-cream overflow-hidden">
+  <div class="max-w-7xl mx-auto px-6">
+    <div class="text-center mb-16 reveal">
+      <p class="text-rose text-sm font-semibold uppercase tracking-widest mb-2">Gallery</p>
+      <h2 class="font-display text-4xl md:text-5xl font-black text-choco">Our Cake Creations</h2>
+      <div class="w-12 h-1 bg-rose mx-auto mt-4 rounded-full"></div>
+      <p class="text-choco/60 mt-4 max-w-2xl mx-auto">Explore the full range of handcrafted cakes, party desserts, and custom designs made with love for every celebration.</p>
+    </div>
+
+     <div class="w-full max-w-5xl mx-auto px-4 md:px-6 py-5">
+
+            <div class="space-y-20">
+
+                <div>
+                    <!-- With grid -->
+                    <div class="grid grid-cols-2 md:grid-cols-4 gap-4">
+                        <!-- Column #1 -->
+                        <div class="grid gap-4">
+                            <div class="gallery-item rounded-2xl overflow-hidden bg-white shadow-lg">
+                                <img class="w-full" src="images/4.webp" alt="Cake gallery image 1" />
+                            </div>
+                            <div class="gallery-item rounded-2xl overflow-hidden bg-white shadow-lg">
+                                <img class="w-full" src="images/1.jpg" alt="Cake gallery image 2" />
+                            </div>
+                            <div class="gallery-item rounded-2xl overflow-hidden bg-white shadow-lg">
+                                <img class="w-full" src="images/5.webp" alt="Cake gallery image 3" />
+                            </div>
+                        </div>
+                        <!-- Column #2 -->
+                        <div class="grid gap-4">
+                            <div class="gallery-item rounded-2xl overflow-hidden bg-white shadow-lg">
+                                <img class="w-full" src="images/3.jpg" alt="Cake gallery image 4" />
+                            </div>
+                            <div class="gallery-item rounded-2xl overflow-hidden bg-white shadow-lg">
+                                <img class="w-full" src="images/4.webp" alt="Cake gallery image 5" />
+                            </div>
+                            <div class="gallery-item rounded-2xl overflow-hidden bg-white shadow-lg">
+                                <img class="w-full" src="images/6.webp" alt="Cake gallery image 6" />
+                            </div>
+                        </div>
+                        <!-- Column #3 -->
+                        <div class="grid gap-4">
+                            <div class="gallery-item rounded-2xl overflow-hidden bg-white shadow-lg">
+                                <img class="w-full" src="images/5.webp" alt="Cake gallery image 7" />
+                            </div>
+                            <div class="gallery-item rounded-2xl overflow-hidden bg-white shadow-lg">
+                                <img class="w-full" src="images/6.webp" alt="Cake gallery image 8" />
+                            </div>
+                            <div class="gallery-item rounded-2xl overflow-hidden bg-white shadow-lg">
+                                <img class="w-full" src="images/8.jpg" alt="Cake gallery image 9" />
+                            </div>
+                        </div>
+                        <!-- Column #4 -->
+                        <div class="grid gap-4">
+                            <div class="gallery-item rounded-2xl overflow-hidden bg-white shadow-lg">
+                                <img class="w-full" src="images/2.jpg" alt="Cake gallery image 10" />
+                            </div>
+                            <div class="gallery-item rounded-2xl overflow-hidden bg-white shadow-lg">
+                                <img class="w-full" src="images/8.jpg" alt="Cake gallery image 11" />
+                            </div>
+                            <div class="gallery-item rounded-2xl overflow-hidden bg-white shadow-lg">
+                                <img class="w-full" src="images/1.jpg" alt="Cake gallery image 12" />
+                            </div>
+                        </div>
+                    </div>
+                </div>
+
+            </div>
+
+        </div>
+  </div>
+</section>
+
+
+<!-- ════════════════════════════════════════════
+     BUILD YOUR OWN CAKE
+════════════════════════════════════════════ -->
+<section id="build" class="py-24 relative overflow-hidden">
+  <div class="blob w-80 h-80 bg-rose/20 -bottom-10 -left-20"></div>
+  <div class="max-w-7xl mx-auto px-6 relative z-10">
+    <div class="text-center mb-16 reveal">
+      <p class="text-rose text-sm font-semibold uppercase tracking-widest mb-2">Personalize It</p>
+      <h2 class="font-display text-4xl md:text-5xl font-black text-choco">Build Your Own Cake</h2>
+      <div class="w-12 h-1 bg-rose mx-auto mt-4 rounded-full"></div>
+      <p class="text-choco/60 mt-4 max-w-xl mx-auto">Choose your size, sponge, filling & design — we'll handle the rest.</p>
+    </div>
+
+    <div class="grid md:grid-cols-2 gap-12 items-start">
+      <!-- Steps -->
+      <div class="space-y-4 reveal">
+        <div class="build-step bg-white rounded-2xl p-5 shadow-md flex items-center gap-5 group" onclick="selectStep(this)">
+          <div class="w-12 h-12 rounded-xl bg-rose/10 flex items-center justify-center step-icon text-2xl">📏</div>
+          <div>
+            <p class="font-semibold text-choco text-sm uppercase tracking-wide">Step 1 – Choose Size</p>
+            <div class="flex gap-2 mt-2 flex-wrap">
+              <span class="size-btn bg-blush text-choco/70 text-xs px-3 py-1 rounded-full cursor-pointer hover:bg-rose hover:text-white transition">6" · 6 pax</span>
+              <span class="size-btn bg-blush text-choco/70 text-xs px-3 py-1 rounded-full cursor-pointer hover:bg-rose hover:text-white transition">8" · 12 pax</span>
+              <span class="size-btn bg-blush text-choco/70 text-xs px-3 py-1 rounded-full cursor-pointer hover:bg-rose hover:text-white transition">10" · 20 pax</span>
+            </div>
+          </div>
+        </div>
+        <div class="build-step bg-white rounded-2xl p-5 shadow-md flex items-center gap-5 group" onclick="selectStep(this)">
+          <div class="w-12 h-12 rounded-xl bg-rose/10 flex items-center justify-center step-icon text-2xl">🍰</div>
+          <div>
+            <p class="font-semibold text-choco text-sm uppercase tracking-wide">Step 2 – Pick Sponge</p>
+            <div class="flex gap-2 mt-2 flex-wrap">
+              <span class="size-btn bg-blush text-choco/70 text-xs px-3 py-1 rounded-full cursor-pointer hover:bg-rose hover:text-white transition">Vanilla</span>
+              <span class="size-btn bg-blush text-choco/70 text-xs px-3 py-1 rounded-full cursor-pointer hover:bg-rose hover:text-white transition">Chocolate</span>
+              <span class="size-btn bg-blush text-choco/70 text-xs px-3 py-1 rounded-full cursor-pointer hover:bg-rose hover:text-white transition">Red Velvet</span>
+            </div>
+          </div>
+        </div>
+        <div class="build-step bg-white rounded-2xl p-5 shadow-md flex items-center gap-5 group" onclick="selectStep(this)">
+          <div class="w-12 h-12 rounded-xl bg-rose/10 flex items-center justify-center step-icon text-2xl">🍯</div>
+          <div>
+            <p class="font-semibold text-choco text-sm uppercase tracking-wide">Step 3 – Select Filling</p>
+            <div class="flex gap-2 mt-2 flex-wrap">
+              <span class="size-btn bg-blush text-choco/70 text-xs px-3 py-1 rounded-full cursor-pointer hover:bg-rose hover:text-white transition">Fresh Cream</span>
+              <span class="size-btn bg-blush text-choco/70 text-xs px-3 py-1 rounded-full cursor-pointer hover:bg-rose hover:text-white transition">Caramel</span>
+              <span class="size-btn bg-blush text-choco/70 text-xs px-3 py-1 rounded-full cursor-pointer hover:bg-rose hover:text-white transition">Ganache</span>
+            </div>
+          </div>
+        </div>
+        <div class="build-step bg-white rounded-2xl p-5 shadow-md flex items-center gap-5 group" onclick="selectStep(this)">
+          <div class="w-12 h-12 rounded-xl bg-rose/10 flex items-center justify-center step-icon text-2xl">🎨</div>
+          <div>
+            <p class="font-semibold text-choco text-sm uppercase tracking-wide">Step 4 – Decoration</p>
+            <div class="flex gap-2 mt-2 flex-wrap">
+              <span class="size-btn bg-blush text-choco/70 text-xs px-3 py-1 rounded-full cursor-pointer hover:bg-rose hover:text-white transition">Floral</span>
+              <span class="size-btn bg-blush text-choco/70 text-xs px-3 py-1 rounded-full cursor-pointer hover:bg-rose hover:text-white transition">Minimalist</span>
+              <span class="size-btn bg-blush text-choco/70 text-xs px-3 py-1 rounded-full cursor-pointer hover:bg-rose hover:text-white transition">Photo Print</span>
+            </div>
+          </div>
+        </div>
+      </div>
+
+      <!-- Order form -->
+      <div class="reveal bg-white rounded-3xl shadow-xl p-8" style="transition-delay:.2s">
+        <h3 class="font-display text-2xl font-bold text-choco mb-6">Place Your Order</h3>
+        <div class="space-y-4">
+          <div>
+            <label class="text-choco/60 text-xs font-semibold uppercase tracking-wide block mb-1">Your Name</label>
+            <input type="text" placeholder="e.g. Priya Sharma" class="w-full border border-blush rounded-xl px-4 py-3 text-choco/80 text-sm focus:outline-none focus:border-rose transition"/>
+          </div>
+          <div>
+            <label class="text-choco/60 text-xs font-semibold uppercase tracking-wide block mb-1">Phone / WhatsApp</label>
+            <input type="tel" placeholder="+91 98765 43210" class="w-full border border-blush rounded-xl px-4 py-3 text-choco/80 text-sm focus:outline-none focus:border-rose transition"/>
+          </div>
+          <div>
+            <label class="text-choco/60 text-xs font-semibold uppercase tracking-wide block mb-1">Delivery Date</label>
+            <input type="date" class="w-full border border-blush rounded-xl px-4 py-3 text-choco/80 text-sm focus:outline-none focus:border-rose transition"/>
+          </div>
+          <div>
+            <label class="text-choco/60 text-xs font-semibold uppercase tracking-wide block mb-1">Special Message on Cake</label>
+            <input type="text" placeholder="Happy Birthday, Rohan! 🎉" class="w-full border border-blush rounded-xl px-4 py-3 text-choco/80 text-sm focus:outline-none focus:border-rose transition"/>
+          </div>
+          <div>
+            <label class="text-choco/60 text-xs font-semibold uppercase tracking-wide block mb-1">Notes / Allergies</label>
+            <textarea rows="2" placeholder="Any dietary requirements..." class="w-full border border-blush rounded-xl px-4 py-3 text-choco/80 text-sm focus:outline-none focus:border-rose transition resize-none"></textarea>
+          </div>
+          <button class="btn-primary w-full text-center mt-2" onclick="alert('🎂 Order received! We\'ll WhatsApp you shortly.')">
+            🎂 Confirm Order
+          </button>
+          <p class="text-choco/40 text-xs text-center">Free delivery within 10 km · Min 48hr notice</p>
+        </div>
+      </div>
+    </div>
+  </div>
+</section>
+
+
+<!-- ════════════════════════════════════════════
+     CUSTOMER REVIEWS
+════════════════════════════════════════════ -->
+<section id="reviews" class="py-24 bg-gradient-to-br from-choco to-choco/90 relative overflow-hidden">
+  <div class="blob w-64 h-64 bg-rose/30 top-10 right-10 opacity-40"></div>
+  <div class="max-w-7xl mx-auto px-6 relative z-10">
+    <div class="text-center mb-16 reveal">
+      <p class="text-rose text-sm font-semibold uppercase tracking-widest mb-2">Google Reviews</p>
+      <h2 class="font-display text-4xl md:text-5xl font-black text-white">What People Are Saying</h2>
+      <div class="w-12 h-1 bg-rose mx-auto mt-4 rounded-full"></div>
+      <p class="text-white/60 mt-4 max-w-2xl mx-auto">Real review highlights from 31 verified Google reviews for RadhaKrishna CakeHouse.</p>
+    </div>
+
+    <div class="relative reveal">
+      <div class="review-carousel grid gap-6">
+        <div class="review-slide review-card bg-white/10 border border-white/10 rounded-3xl p-6 text-white">
+          <div class="star text-sm mb-3">★★★★★</div>
+          <p class="text-white/80 text-sm leading-relaxed mb-4">"Ordered a custom birthday cake and it arrived fresh, beautifully decorated, and exactly as requested. The best bakery experience in Siliguri!"</p>
+          <div class="flex items-center gap-3">
+            <div class="w-9 h-9 rounded-full bg-rose flex items-center justify-center font-bold text-white text-sm">P</div>
+            <div>
+              <p class="font-semibold text-sm">Pooja</p>
+              <p class="text-white/40 text-xs">Siliguri</p>
+            </div>
+          </div>
+        </div>
+        <div class="review-slide review-card hidden bg-white/10 border border-white/10 rounded-3xl p-6 text-white">
+          <div class="star text-sm mb-3">★★★★★</div>
+          <p class="text-white/80 text-sm leading-relaxed mb-4">"The cake tasted rich and moist, and the design was gorgeous. Delivery was prompt and the packaging was perfect."</p>
+          <div class="flex items-center gap-3">
+            <div class="w-9 h-9 rounded-full bg-gold flex items-center justify-center font-bold text-white text-sm">R</div>
+            <div>
+              <p class="font-semibold text-sm">Ritika</p>
+              <p class="text-white/40 text-xs">Siliguri</p>
+            </div>
+          </div>
+        </div>
+        <div class="review-slide review-card hidden bg-white/10 border border-white/10 rounded-3xl p-6 text-white">
+          <div class="star text-sm mb-3">★★★★★</div>
+          <p class="text-white/80 text-sm leading-relaxed mb-4">"Amazing taste and beautiful finishing. RadhaKrishna CakeHouse made our celebration extra special."</p>
+          <div class="flex items-center gap-3">
+            <div class="w-9 h-9 rounded-full bg-choco/60 flex items-center justify-center font-bold text-white text-sm">S</div>
+            <div>
+              <p class="font-semibold text-sm">Suman</p>
+              <p class="text-white/40 text-xs">Siliguri</p>
+            </div>
+          </div>
+        </div>
+      </div>
+      <div class="mt-8 flex justify-center gap-4">
+        <button id="reviewPrev" class="btn-outline">← Previous</button>
+        <button id="reviewNext" class="btn-primary">Next →</button>
+      </div>
+    </div>
+
+    <div class="mt-16 grid grid-cols-2 md:grid-cols-4 gap-6 reveal">
+      <div class="text-center">
+        <p class="font-display text-4xl font-black text-rose">31</p>
+        <p class="text-white/50 text-sm mt-1">Google Reviews</p>
+      </div>
+      <div class="text-center">
+        <p class="font-display text-4xl font-black text-rose">5.0★</p>
+        <p class="text-white/50 text-sm mt-1">Average Rating</p>
+      </div>
+      <div class="text-center">
+        <p class="font-display text-4xl font-black text-rose">2,400+</p>
+        <p class="text-white/50 text-sm mt-1">Happy Customers</p>
+      </div>
+      <div class="text-center">
+        <p class="font-display text-4xl font-black text-rose">6</p>
+        <p class="text-white/50 text-sm mt-1">Years of Baking</p>
+      </div>
+    </div>
+  </div>
+</section>
+
+
+<!-- ════════════════════════════════════════════
+     CTA BANNER
+════════════════════════════════════════════ -->
+<section class="cta-bg py-20 relative overflow-hidden">
+  <div class="blob w-72 h-72 bg-white/10 top-0 -left-10"></div>
+  <div class="max-w-3xl mx-auto px-6 text-center relative z-10">
+    <h2 class="font-display text-4xl md:text-5xl font-black text-white mb-4">
+      Your Dream Cake Awaits 🎂
+    </h2>
+    <p class="text-white/80 mb-8 text-lg">Order at least 48 hours in advance. Free delivery within Siliguri for orders above ₹1,500.</p>
+    <div class="flex flex-wrap gap-4 justify-center">
+      <a href="#build" class="bg-white text-rose font-bold px-8 py-3 rounded-full hover:bg-cream transition shadow-lg">Order a Cake</a>
+      <a href="https://wa.me/919876543210" class="bg-transparent border-2 border-white text-white font-bold px-8 py-3 rounded-full hover:bg-white/10 transition">💬 WhatsApp Us</a>
+    </div>
+  </div>
+</section>
+
+
+<!-- ════════════════════════════════════════════
+     LOCATION
+════════════════════════════════════════════ -->
+<section id="location" class="pt-24 bg-cream overflow-hidden">
+  <div class="max-w-7xl mx-auto px-6">
+    <div class="text-center mb-12 reveal">
+      <p class="text-rose text-sm font-semibold uppercase tracking-widest mb-2">Find Us</p>
+      <h2 class="font-display text-4xl md:text-5xl font-black text-choco">Visit Our Cake House</h2>
+      <div class="w-12 h-1 bg-rose mx-auto mt-4 rounded-full"></div>
+      <p class="text-choco/60 mt-4 max-w-2xl mx-auto">Drop by to taste our fresh cakes, see sample designs, or place a custom order in person.</p>
+    </div>
+    <div class="map-fullwidth reveal">
+      <div class="map-card">
+        <iframe class="map-frame" src="https://www.google.com/maps/embed?pb=!1m18!1m12!1m3!1d3564.663202603997!2d88.423548!3d26.691252!2m3!1f0!2f0!3f0!3m2!1i1024!2i768!4f13.1!3m3!1m2!1s0x39e443648afd0115%3A0x443a44ba129eb7d2!2sRadhaKrishna%20CakeHouse!5e0!3m2!1sen!2sin!4v1779271514943!5m2!1sen!2sin" allowfullscreen="" loading="lazy" referrerpolicy="no-referrer-when-downgrade"></iframe>
+      </div>
+    </div>
+  </div>
+</section>
+
+
+<!-- ════════════════════════════════════════════
+     FOOTER
+════════════════════════════════════════════ -->
+<footer class="bg-choco text-white/60 py-12">
+  <div class="max-w-7xl mx-auto px-6 grid md:grid-cols-3 gap-10">
+    <div class="flex items-center gap-3">
+      <img src="images/logo.png" alt="RadhaKrishna CakeHouse logo" class="h-10 object-cover shadow-sm rounded-[10px] bg-white p-1" />
+      <div>
+        <p class="text-sm leading-relaxed">Handcrafted cakes for every celebration, baked fresh in Siliguri with love and the finest ingredients.</p>
+      </div>
+    </div>
+    <div>
+      <p class="text-white font-semibold mb-4 uppercase text-xs tracking-wider">Quick Links</p>
+      <div class="flex flex-col gap-2 text-sm">
+        <a href="#flavors" class="hover:text-rose transition">Flavors</a>
+        <a href="#seasonal" class="hover:text-rose transition">Seasonal</a>
+        <a href="#build" class="hover:text-rose transition">Build Your Cake</a>
+        <a href="#reviews" class="hover:text-rose transition">Reviews</a>
+      </div>
+    </div>
+    <div>
+      <p class="text-white font-semibold mb-4 uppercase text-xs tracking-wider">Get in Touch</p>
+      <div class="text-sm space-y-2">
+        <p>📞 +919876543210</p>
+        <p>📧 info@example.com</p>
+        <p>📍 34, Sree Maa Sarani, Ward 26, Babupara, Siliguri, West Bengal 734004</p>
+        <p class="mt-4 text-white/40 text-xs">© 2026 Best Wishes Bakers Cafe. All rights reserved.</p>
+      </div>
+    </div>
+  </div>
+</footer>
+
+
+<script>
+  // ── Scroll reveal ──
+  const reveals = document.querySelectorAll('.reveal');
+  const observer = new IntersectionObserver(entries => {
+    entries.forEach(e => { if (e.isIntersecting) e.target.classList.add('visible'); });
+  }, { threshold: 0.15 });
+  reveals.forEach(r => observer.observe(r));
+
+  // ── Size btn toggle ──
+  document.querySelectorAll('.size-btn').forEach(btn => {
+    btn.addEventListener('click', function() {
+      const siblings = this.parentElement.querySelectorAll('.size-btn');
+      siblings.forEach(s => { s.classList.remove('bg-rose','text-white'); s.classList.add('bg-blush','text-choco/70'); });
+      this.classList.remove('bg-blush','text-choco/70');
+      this.classList.add('bg-rose','text-white');
+    });
+  });
+
+  // ── Select step highlight ──
+  function selectStep(el) {
+    document.querySelectorAll('.build-step').forEach(s => {
+      s.classList.remove('bg-rose','text-white');
+      s.querySelectorAll('p,span').forEach(p => p.classList.remove('text-white','text-white/70'));
+    });
+  }
+
+  // ── Navbar shrink on scroll ──
+  (function() {
+    const nav = document.querySelector('nav');
+    if (!nav) return;
+    const onScroll = () => {
+      if (window.scrollY > 0) {
+        nav.classList.add('scrolled');
+      } else {
+        nav.classList.remove('scrolled');
+      }
+    };
+    window.addEventListener('scroll', onScroll, { passive: true });
+    // ensure correct initial state
+    onScroll();
+  })();
+
+  // ── Reviews parallax effect (scroll + pointer) ──
+  (function(){
+    const section = document.getElementById('reviews');
+    if (!section) return;
+    const cards = Array.from(section.querySelectorAll('.review-card'));
+    const blob = section.querySelector('.blob');
+    if (!cards.length) return;
+
+    const scrollOffsets = cards.map(() => 0);
+    const pointerOffsets = cards.map(() => ({x:0, y:0}));
+
+    function applyTransforms() {
+      cards.forEach((el, i) => {
+        const sx = pointerOffsets[i].x;
+        const sy = pointerOffsets[i].y + scrollOffsets[i];
+        el.style.transform = `translate3d(${sx}px, ${sy}px, 0)`;
+      });
+    }
+
+    function onScroll(){
+      const rect = section.getBoundingClientRect();
+      const winH = window.innerHeight;
+      const pct = (winH - rect.top) / (winH + rect.height);
+      const clamp = Math.max(0, Math.min(1, pct));
+      cards.forEach((el, i) => {
+        const depth = (i - (cards.length - 1) / 2) * 12; // depth px
+        const scrollTranslate = (clamp - 0.5) * depth;
+        scrollOffsets[i] = scrollTranslate;
+      });
+      if (blob) {
+        const btranslate = (clamp - 0.5) * 40;
+        blob.style.transform = `translate3d(0, ${btranslate}px, 0)`;
+      }
+      applyTransforms();
+    }
+
+    let rafId = null;
+    window.addEventListener('scroll', () => {
+      if (rafId) cancelAnimationFrame(rafId);
+      rafId = requestAnimationFrame(onScroll);
+    }, {passive: true});
+
+    section.addEventListener('pointermove', e => {
+      const bounds = section.getBoundingClientRect();
+      const px = (e.clientX - bounds.left) / bounds.width - 0.5;
+      const py = (e.clientY - bounds.top) / bounds.height - 0.5;
+      cards.forEach((el, i) => {
+        const depthFactor = 6 + (i * 1.6);
+        const tx = px * depthFactor * 12; // horizontal subtle
+        const ty = py * depthFactor * -6; // vertical subtle
+        pointerOffsets[i].x = tx;
+        pointerOffsets[i].y = ty;
+      });
+      applyTransforms();
+    });
+
+    section.addEventListener('pointerleave', () => {
+      cards.forEach((_, i) => { pointerOffsets[i].x = 0; pointerOffsets[i].y = 0; });
+      applyTransforms();
+    });
+
+    // initial position
+    onScroll();
+  })();
+
+  // ── Hero slider auto-rotate ──
+  (function() {
+    const slides = Array.from(document.querySelectorAll('.slide'));
+    const dots = Array.from(document.querySelectorAll('.slider-dot'));
+    const prev = document.getElementById('slider-prev');
+    const next = document.getElementById('slider-next');
+    const progress = document.getElementById('slide-progress');
+    if (!slides.length || !dots.length) return;
+
+    let current = 0;
+    let interval;
+
+    const updateProgress = () => {
+      if (!progress) return;
+      progress.style.transition = 'none';
+      progress.style.width = '0';
+      requestAnimationFrame(() => {
+        requestAnimationFrame(() => {
+          progress.style.transition = 'width 5s linear';
+          progress.style.width = '100%';
+        });
+      });
+    };
+
+    const updateHero = index => {
+      slides.forEach((slide, idx) => {
+        slide.classList.toggle('active', idx === index);
+      });
+      dots.forEach((dot, idx) => {
+        const active = idx === index;
+        dot.classList.toggle('active', active);
+        dot.setAttribute('aria-selected', active ? 'true' : 'false');
+      });
+      current = index;
+      updateProgress();
+    };
+
+    const nextSlide = () => updateHero((current + 1) % slides.length);
+    const prevSlide = () => updateHero((current - 1 + slides.length) % slides.length);
+    const resetInterval = () => {
+      window.clearInterval(interval);
+      interval = window.setInterval(nextSlide, 5000);
+    };
+
+    dots.forEach((dot, idx) => {
+      dot.addEventListener('click', () => {
+        updateHero(idx);
+        resetInterval();
+      });
+    });
+
+    prev?.addEventListener('click', () => {
+      prevSlide();
+      resetInterval();
+    });
+
+    next?.addEventListener('click', () => {
+      nextSlide();
+      resetInterval();
+    });
+
+    updateHero(0);
+    resetInterval();
+  })();
+
+  // ── Review carousel controls ──
+  (function() {
+    const slides = Array.from(document.querySelectorAll('.review-slide'));
+    if (!slides.length) return;
+    let current = 0;
+    const updateSlides = () => {
+      slides.forEach((slide, index) => {
+        slide.classList.toggle('hidden', index !== current);
+      });
+    };
+    document.getElementById('reviewPrev')?.addEventListener('click', () => {
+      current = (current - 1 + slides.length) % slides.length;
+      updateSlides();
+    });
+    document.getElementById('reviewNext')?.addEventListener('click', () => {
+      current = (current + 1) % slides.length;
+      updateSlides();
+    });
+    updateSlides();
+  })();
+
+  // ── Gallery image modal / lightbox ──
+  document.addEventListener('DOMContentLoaded', () => {
+    (function(){
+      const galleryItems = Array.from(document.querySelectorAll('#gallery .gallery-item'));
+      const modal = document.getElementById('image-modal');
+      const modalImg = document.getElementById('modal-img');
+      const closeBtn = document.getElementById('modal-close');
+      if (!galleryItems.length || !modal || !modalImg) return;
+
+      galleryItems.forEach(item => {
+        item.addEventListener('click', () => {
+          const img = item.querySelector('img');
+          if (!img) return;
+          modalImg.src = img.src;
+          modalImg.alt = img.alt || 'Gallery image';
+          modal.classList.remove('hidden');
+          modal.setAttribute('aria-hidden', 'false');
+          document.body.style.overflow = 'hidden';
+        });
+      });
+
+      function closeModal() {
+        modal.classList.add('hidden');
+        modal.setAttribute('aria-hidden', 'true');
+        modalImg.src = '';
+        document.body.style.overflow = '';
+      }
+
+      closeBtn?.addEventListener('click', closeModal);
+      modal?.addEventListener('click', e => { if (e.target === modal) closeModal(); });
+      document.addEventListener('keydown', e => { if (e.key === 'Escape') closeModal(); });
+    })();
+  });
+</script>
+
+<!-- Image modal -->
+<div id="image-modal" class="hidden" aria-hidden="true">
+  <button id="modal-close" aria-label="Close image">✕</button>
+  <img id="modal-img" src="" alt="Expanded image" />
+</div>
+</body>
+</html>
